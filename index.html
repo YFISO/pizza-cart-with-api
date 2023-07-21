@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+        integrity="sha512-bkHlMvPmS/gVeW8C7vgUHr3O7rcfr29CGO2TMzPrC6oYqvhM0vuhM8g2fqT9q9ejQDFViVUGi8rLQ8vInRGS2Q=="
+         crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"
+        integrity="sha512-uMtXmF28A2Ab/JJO2t/vYhlaa/3ahUOgj1Zf27M5rOo8/+fcTUVH0/E0ll68njmjrLqOBjXM3V9NiPFL5ywWPQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="cart.js"></script>
+    </body>
+</head>
+
+<body>
+    <div class="container " >
+        <div class="box ">
+
+            
+            <form action="#">
+
+                <div class="input_box">
+                    
+                    <div>
+                        <label>Username: </label><input x-model="username" type="text" class="username" required>
+                    </div>
+                    
+                </div>
+               
+
+
+            </form>
+        </div>
+    </div>
+    <section  class="main" x-data="PizzaCartAPI">
+        <Section class="header">
+            <h1>Best Pizza</h1>
+        </Section>
+
+        <div>
+            <section class="cart" style="padding-bottom: 1em;">
+    
+                <h2 style="text-align: center; border: solid; background-color: whitesmoke;
+                padding: 0.5em;">Shopping Cart</h2>
+                <section class="pizza-list">
+                    <button x-show="!cartDisplayed" @click="displayCart()">View Cart</button>
+                    <table x-show="cartDisplayed"
+                        class="table table-striped table-dark table-responsive{-sm|-md|-lg|-xl}">
+
+                        <thead>
+                            <tr>
+                                <th colspan="5">
+
+                                    <button @click="closeCart()" class="close-button">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-cart cart" viewBox="0 0 16 16">
+                                            <path
+                                                d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                                        </svg><span class="close">Close</span>
+                                    </button>
+
+
+                                </th>
+
+                            </tr>
+                            <tr x-show="message!==''">
+
+                                <th x-show="paymentStatus === 'failure'" class="text-center bg-danger text-white"
+                                    colspan="5" x-text="message"></th>
+                                <th x-show="paymentStatus === 'success'" class="text-center bg-success text-white"
+                                    colspan="5" x-text="message"></th>
+
+
+                            </tr>
+                            <tr>
+                                <th>Flavour</th>
+                                <th>Size</th>
+                                <th>Price</th>
+
+                                <th>Qty</th>
+                                <th>Total</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <template x-for="pizza in cartPizzas">
+                                <tr>
+                                    <td class="w-auto" x-text="pizza.flavour"></td>
+                                    <td class="w-auto" x-text="pizza.size"></td>
+                                    <td class="w-auto" x-text="pizza.price"></td>
+                                    <td class="w-auto">
+
+                                        <button @click="addToCart(pizza.id)" class="rounded-circle">
+                                            +
+                                        </button>
+                                        <span x-text="pizza.qty"></span>
+                                        <button @click="removeFromCart(pizza.id)" class="rounded-circle">
+                                            -
+                                        </button>
+                                    </td>
+                                    <td class="w-auto" x-text="priceFormat(pizza.total)"></td>
+                                </tr>
+                            </template>
+                            <tr>
+                                <td class="w-auto" colspan="4">Total</td>
+
+                                <td class="w-auto">R<span x-text="priceFormat(cartTotal)"></span></td>
+                            </tr>
+                                <tr>
+                                    <td class="w-auto" colspan="3">Pay now</td>
+                                    <td class="w-auto"><input placeholder="Enter numbers only" x-model="paymentAmount" />
+                                    </td>
+    
+                                    <td @click="payPizza()" class="w-auto pay-pizza-button">
+                                        <button>Pay</button>
+                                    </td>
+                                </tr>
+                        </tbody>
+                    </table>
+
+                </section>
+                <template x-for="pizza in CartPizzas">
+
+
+                    <div>
+                        <span x-text="pizza.flavor" style="padding-right: 1.9em;"></span>
+                        <button class="addPizzaBtn" @click=" 
+                        smallTotal += 28;">+</button>
+                        <button class="subPizzaBtn" @click="if(smallTotal > 0){
+                        smallTotal -= 28;
+                    }">-</button>
+                        <span class="smallTotal" x-text="smallTotal"></span>
+                    </div>
+                </template>
+                <div>
+
+                    <div>
+
+                        <div>
+                            <span x-text="" style="padding-right: 1.9em;"></span>
+                            <span class="" x-text=""></span>
+                        </div>
+                        <template x-if=" totalCost > 0">
+                            <div class="orderPizza" x-show="true" style="padding-bottom: 1em;">
+                                <button class="checkOutBtn" @click="modal=true">Checkout</button>
+                            </div>
+                        </template>
+                        <div x-show="modal" @click.outside="modal = false">
+                            <div x-text="Message" style="background-color: white;
+                    font-size:larger; margin-bottom: 1em;"></div>
+                            <span style="padding-top: 1em;">Payment Amount:</span>
+                            <input class="payAmountTxt" type="text" x-model="payAmount" style="font-size: small;">
+                            <div class="orderPizza" style="padding-bottom: 1em;">
+                                <button class="orderBtn" @click="if(payAmount == totalCost){ 
+                            Message=successMessage; }
+                            else{ Message=failMessage; }">Pay</button>
+                            </div>
+                        </div>
+                        <div x-init="$watch('Message', setInterval(function(){
+                    if(Message == successMessage || Message == failMessage){
+                        modal = false,
+                        totalCost = 0, smallTotal= 0, 
+                        mediumTotal= 0, largeTotal= 0,
+                        Message= '', payAmount= 0 
+                    }
+                    }, 7000))">
+                        </div>
+            </section>
+            <div class="sizes">
+                <div class="box1">
+                    <div class="sizeHeading">
+                        <h2>Large Pizza</h2>
+                        <h3>R148</h3>
+                    </div>
+                    <div class="photo">
+                        <img src="images/P.png">
+                    </div>
+                    <div class="description">
+                        large margeritha pizza with 3 toppings max.
+                        3 meat toppings max. 3 or less other
+                        toppings
+                    </div>
+                    <div class="orderPizza">
+                        <button class="orderBtn" @click="if(mediumTotal == 0){ 
+                            mediumTotal += 148;}">Buy</button>
+                    </div>
+                </div>
+                <div class="box2">
+                    <div class="sizeHeading">
+                        <h2>Medium Pizza</h2>
+                        <h3>R78</h3>
+                    </div>
+
+                    <div class="photo">
+                        <img src="images/p2.jpg">
+                    </div>
+                    <div class="description">
+                        medium margeritha pizza with 2 toppings max.
+                        3 or less meat topping. 5 or less other
+                        toppings
+                    </div>
+                    <div class="orderPizza">
+                        <button class="orderBtn" @click="if(largeTotal == 0){ 
+                            largeTotal += 78;}">Buy</button>
+                    </div>
+                </div>
+                <div class="box3">
+                    <div class="sizeHeading">
+                        <h2>Small Pizza</h2>
+                        <h3>R56</h3>
+                    </div>
+
+                    <div class="photo">
+                        <img src="images/Pizza-icon.png">
+                    </div>
+
+                    <div class="description">
+                        small pizza with 3 toppings.
+                        1 meat topping.
+                        3 or less other toppings.
+                    </div>
+                    <div class="orderPizza">
+                        <button class="orderBtn" @click="if(smallTotal == 0){ 
+                            smallTotal += 28;}">Buy</button>
+                    </div>
+                </div>
+            </div>
+
+            <section>
+                <template x-for="pizza in pizzas">
+
+                    <div class="pizza-box">
+                        <div class="pizzas" x-bind:class="{
+                      'small-pizza': pizza.size === 'small',
+                      'medium-pizza': pizza.size === 'medium',
+                      'large-pizza': pizza.size === 'large'
+                    }">
+                            <div class="pizza-info">
+                                <span class="pizza-size" x-text="pizza.size"></span>
+                                <span class="pizza-type" x-text="pizza.type"></span>
+                                <span class="pizza-flavour" x-text="pizza.flavour"></span>
+                                <span class="pizza-price" x-text="pizza.price"></span>
+                            </div>
+                            <button @click="addToCart(pizza.id)" class="add-to-cart-btn">Add to Cart</button>
+                        </div>
+                    </div>
+                </template>
+            </section>
+
+            <section class="footer">
+                <div class="contacts">
+                    <p>We Delivery*</p>
+                    <p>Or</p>
+                    <P>You Collect</P>
+                    <p>contact us at: (011)-781-986</p>
+                    <p>Facebook:</p>
+                    <p>@Bestpizza</p>
+                </div>
+                <div class="address">
+                    <p>Order Online @BestPizza.co.za</p>
+                    <p>Open Everyday</p>
+                    <p>Road:</p>
+                    <p>Park Town</p>
+                    
+                </div>
+                </div>
+            </section>
+    </section>
+    
+</body>
+
+</html>
